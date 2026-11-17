@@ -1,0 +1,105 @@
+.list-heading {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+h2 {
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+}
+.result-count {
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+/* Category chips: one scrollable row, never wraps on mobile */
+.category-bar {
+    display: flex;
+    gap: 10px;
+    margin: 0 calc(var(--page-pad) * -1) 8px;
+    padding: 4px var(--page-pad) 10px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.category-bar::-webkit-scrollbar {
+    display: none;
+}
+.chip {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 16px;
+    border: 2px solid var(--border);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+.chip:hover {
+    border-color: var(--muted);
+}
+.chip .count {
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+.chip.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+    font-weight: 700;
+}
+.chip.active .count {
+    color: var(--accent-ink);
+    opacity: 0.7;
+}
+
+.empty {
+    display: grid;
+    justify-items: start;
+    gap: 16px;
+    padding: 40px 0;
+    color: var(--muted);
+}
+.status { color: var(--muted); padding: 40px 0; }
+
+/* Rating / year filters */
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px 28px;
+    margin-bottom: 32px;
+}
+.filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+.filter input[type='range'] {
+    width: 140px;
+    accent-color: var(--accent);
+}
+.filter output {
+    min-width: 2.5em;
+    color: var(--text);
+    font-weight: 700;
+}
+.filter select {
+    padding: 6px 12px;
+    border: 2px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+}
+.reset {
+    padding: 5px 14px;
+    font-size: 0.85rem;
+}

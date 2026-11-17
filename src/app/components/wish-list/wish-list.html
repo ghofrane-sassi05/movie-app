@@ -1,0 +1,34 @@
+<div class="container">
+    <div class="list-heading">
+        <h2>My wish list</h2>
+        <span class="result-count">{{ movieService.wishList().length }} movies</span>
+    </div>
+
+    @if (movieService.wishList().length) {
+        <div class="movie-grid">
+            @for (movie of movieService.wishList(); track movie.id) {
+                <div class="movie-card" role="link" tabindex="0"
+                    (click)="navigateTo(movie)" (keydown.enter)="navigateTo(movie)">
+                    <div class="poster-frame">
+                        @if (movie.poster_path) {
+                            <img [src]="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" [alt]="'Poster of ' + movie.title" loading="lazy">
+                        } @else {
+                            <div class="no-poster">No poster available</div>
+                        }
+                        @if (movie.vote_average) {
+                            <span class="rating">★ {{ movie.vote_average.toFixed(1) }}</span>
+                        }
+                    </div>
+                    <h3>{{movie.title}}</h3>
+                    <p class="meta"><span class="year">{{ movie.release_date?.slice(0, 4) }}</span> <span>{{ genreLabel(movie.genre_ids) }}</span></p>
+                    <button type="button" class="btn remove" (click)="remove($event, movie)">Remove</button>
+                </div>
+            }
+        </div>
+    } @else {
+        <div class="empty">
+            <p>Your wish list is empty. Open a movie and add it to find it here later.</p>
+            <button type="button" class="btn btn--primary" (click)="backToMovieList()">Browse movies</button>
+        </div>
+    }
+</div>

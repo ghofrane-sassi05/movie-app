@@ -1,0 +1,14 @@
+<div class="container">
+ <h1 role="link" tabindex="0" (click)="navigateToHome()" (keydown.enter)="navigateToHome()">My movie DB</h1>
+ <div class="actions">
+  <button class="theme-toggle" (click)="toggleTheme()"
+    [attr.aria-label]="theme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'">
+    <fa-icon [icon]="theme() === 'dark' ? faSun : faMoon" />
+  </button>
+  <button (click)="navigateToWishList()"> wish list <fa-icon [icon]="faHeart" />
+   @if (movieService.wishList().length) {
+     <span class="badge" aria-label="movies in your wish list">{{ movieService.wishList().length }}</span>
+   }
+  </button>
+ </div>
+</div>

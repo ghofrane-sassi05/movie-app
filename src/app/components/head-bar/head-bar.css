@@ -1,0 +1,73 @@
+/* Yellow marquee: the row of bulbs along the bottom edge is the signature of the site */
+.container {
+    position: relative;
+    z-index: 1;
+    background-color: rgb(223, 223, 34);
+    padding: 20px var(--page-pad);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+.container::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -7px;
+    height: 14px;
+    background: radial-gradient(circle at center, var(--bulb) 0 3px, transparent 4px) 0 0 / 24px 14px repeat-x;
+    pointer-events: none;
+}
+h1 {
+    color: #000;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    cursor: pointer;
+}
+button {
+    all: unset;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: fit-content;
+    background-color: #000;
+    border-radius: 999px;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+    font-weight: 700;
+    padding: 8px 18px;
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: background-color 0.15s, color 0.15s;
+}
+button:hover {
+    background-color: #222;
+}
+button:focus-visible,
+h1:focus-visible {
+    outline: 3px solid #000;
+    outline-offset: 3px;
+}
+.badge {
+    min-width: 22px;
+    padding: 0 7px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-size: 0.8rem;
+    text-align: center;
+}
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.theme-toggle {
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border-radius: 50%;
+}

@@ -1,0 +1,89 @@
+<div class="container">
+@if (loading()) {
+    <p class="status">Loading movies…</p>
+} @else if (error()) {
+    <div class="empty">
+        <p>Could not load the movies. Check your connection and try again.</p>
+        <button type="button" class="btn btn--primary" (click)="loadMovies()">Retry</button>
+    </div>
+} @else {
+    <div class="list-heading">
+        <h2>Now playing</h2>
+        <span class="result-count">{{ movieService.filteredMovies().length }} movies</span>
+    </div>
+
+    <div class="category-bar" role="group" aria-label="Filter movies by category (several can be selected)">
+        <button type="button" class="chip"
+            [class.active]="movieService.selectedGenres().length === 0"
+            [attr.aria-pressed]="movieService.selectedGenres().length === 0"
+            (click)="clearGenres()">
+            All <span class="count">{{ movieService.allCount() }}</span>
+        </button>
+        @for (category of movieService.categories(); track category.id) {
+            <button type="button" class="chip"
+                [class.active]="movieService.selectedGenres().includes(category.id)"
+                [attr.aria-pressed]="movieService.selectedGenres().includes(category.id)"
+                (click)="movieService.toggleGenre(category.id)">
+                {{ category.name }} <span class="count">{{ category.count }}</span>
+            </button>
+        }
+    </div>
+
+    <div class="filters">
+        <label class="filter">
+            <span>Min rating</span>
+            <input type="range" min="0" max="9" step="1"
+                [value]="movieService.minRating()" (input)="setMinRating($event)">
+            <output>{{ movieService.minRating() > 0 ? movieService.minRating() + '+' : 'Any' }}</output>
+        </label>
+        @if (movieService.years().length > 1) {
+            <label class="filter">
+                <span>Year</span>
+                <select (change)="setYear($event)">
+                    <option value="" [selected]="movieService.selectedYear() === null">All years</option>
+                    @for (year of movieService.years(); track year) {
+                        <option [value]="year" [selected]="movieService.selectedYear() === year">{{ year }}</option>
+                    }
+                </select>
+            </label>
+        }
+        @if (movieService.hasActiveFilters()) {
+            <button type="button" class="btn reset" (click)="movieService.resetFilters()">Reset filters</button>
+        }
+    </div>
+
+    @if (movieService.filteredMovies().length) {
+        <div class="movie-grid">
+            @for (movie of movieService.filteredMovies(); track movie.id) {
+                <div class="movie-card" role="link" tabindex="0"
+                    (click)="navigateTo(movie)" (keydown.enter)="navigateTo(movie)">
+                    <div class="poster-frame">
+                        @if (movie.poster_path) {
+                            <img [src]="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" [alt]="'Poster of ' + movie.title" loading="lazy">
+                        } @else {
+                            <div class="no-poster">No poster available</div>
+                        }
+                        @if (movie.vote_average) {
+                            <span class="rating">★ {{ movie.vote_average.toFixed(1) }}</span>
+                        }
+                        <button type="button" class="wish-heart"
+                            [class.active]="movieService.isInWish(movie.id)"
+                            [attr.aria-pressed]="movieService.isInWish(movie.id)"
+                            [attr.aria-label]="(movieService.isInWish(movie.id) ? 'Remove from wish list: ' : 'Add to wish list: ') + movie.title"
+                            (click)="toggleWish($event, movie)" (keydown.enter)="$event.stopPropagation()">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        </button>
+                    </div>
+                    <h3>{{movie.title}}</h3>
+                    <p class="meta"><span class="year">{{ movie.release_date?.slice(0, 4) }}</span> <span>{{ genreLabel(movie.genre_ids) }}</span></p>
+                </div>
+            }
+        </div>
+    } @else {
+        <div class="empty">
+            <p>No movie matches these filters.</p>
+            <button type="button" class="btn btn--primary" (click)="movieService.resetFilters()">Reset filters</button>
+        </div>
+    }
+}
+</div>

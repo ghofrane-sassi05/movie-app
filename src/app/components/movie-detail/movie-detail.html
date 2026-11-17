@@ -1,0 +1,142 @@
+<div class="container">
+    @if (movieService.selectedMovie(); as movie) {
+        <div class="details-container">
+            <div class="poster">
+                @if (movie.poster_path) {
+                    <img [src]="`https://image.tmdb.org/t/p/w780${movie.poster_path}`" [alt]="'Poster of ' + movie.title">
+                } @else {
+                    <div class="no-poster">No poster available</div>
+                }
+            </div>
+
+            <div class="info">
+                <h2>{{ movie.title }}</h2>
+                @if (movie.genres?.length) {
+                    <ul class="genres">
+                        @for (genre of movie.genres; track genre.id) {
+                            <li>{{ genre.name }}</li>
+                        }
+                    </ul>
+                }
+
+                <div class="detail-items">
+                    <div class="detail-item">
+                        <h3>Original Title</h3>
+                        <p>{{movie.original_title}}</p>
+                    </div>
+                    <div class="detail-item">
+                        <h3>Original Language</h3>
+                        <p>{{movie.original_language}}</p>
+                    </div>
+                    <div class="detail-item">
+                        <h3>Release Date</h3>
+                        <p>{{movie.release_date}}</p>
+                    </div>
+                    <div class="detail-item">
+                        <h3>Runtime</h3>
+                        <p>{{ formatRuntime(movie.runtime) }}</p>
+                    </div>
+                    <div class="detail-item">
+                        <h3>Budget</h3>
+                        <p>{{ formatBudget(movie.budget) }}</p>
+                    </div>
+                    @if (directors()) {
+                        <div class="detail-item">
+                            <h3>Director</h3>
+                            <p>{{ directors() }}</p>
+                        </div>
+                    }
+                    <div class="detail-item">
+                        <h3>Vote Average</h3>
+                        <p>★ {{movie.vote_average}}</p>
+                    </div>
+                    <div class="detail-item">
+                        <h3>Vote Count</h3>
+                        <p>{{movie.vote_count}}</p>
+                    </div>
+                </div>
+
+                <div class="overview-container">
+                    <p class="detail">{{movie.overview}}</p>
+                </div>
+
+                <div class="button-container">
+                    @if (trailerKey(); as key) {
+                        <button class="btn btn--primary" (click)="openTrailer(key)">▶ Watch trailer</button>
+                    }
+                    <button class="btn" (click)="backToMovieList()">Back to Movie List</button>
+                    <button class="btn" [disabled]="movieService.isInWish(movie.id)" (click)="addToWish(movie)">
+                        {{ movieService.isInWish(movie.id) ? 'In your wish list' : 'Add to Wish List' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        @if (cast().length) {
+            <section class="section">
+                <h3 class="section-title">Cast</h3>
+                <ul class="cast-list">
+                    @for (person of cast(); track person.id) {
+                        <li class="cast-member">
+                            @if (person.profile_path) {
+                                <img [src]="`https://image.tmdb.org/t/p/w185${person.profile_path}`" [alt]="person.name" loading="lazy">
+                            } @else {
+                                <div class="no-photo" aria-hidden="true">{{ initials(person.name) }}</div>
+                            }
+                            <strong>{{ person.name }}</strong>
+                            <span>{{ person.character }}</span>
+                        </li>
+                    }
+                </ul>
+            </section>
+        }
+
+        @if (similar().length) {
+            <section class="section">
+                <h3 class="section-title">Similar movies</h3>
+                <div class="movie-grid">
+                    @for (item of similar(); track item.id) {
+                        <div class="movie-card" role="link" tabindex="0"
+                            (click)="navigateTo(item)" (keydown.enter)="navigateTo(item)">
+                            <div class="poster-frame">
+                                @if (item.poster_path) {
+                                    <img [src]="`https://image.tmdb.org/t/p/w342${item.poster_path}`" [alt]="'Poster of ' + item.title" loading="lazy">
+                                } @else {
+                                    <div class="no-poster">No poster available</div>
+                                }
+                                @if (item.vote_average) {
+                                    <span class="rating">★ {{ item.vote_average.toFixed(1) }}</span>
+                                }
+                                <button type="button" class="wish-heart"
+                                    [class.active]="movieService.isInWish(item.id)"
+                                    [attr.aria-pressed]="movieService.isInWish(item.id)"
+                                    [attr.aria-label]="(movieService.isInWish(item.id) ? 'Remove from wish list: ' : 'Add to wish list: ') + item.title"
+                                    (click)="toggleWish($event, item)" (keydown.enter)="$event.stopPropagation()">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                </button>
+                            </div>
+                            <h3>{{ item.title }}</h3>
+                            <p class="meta"><span class="year">{{ item.release_date?.slice(0, 4) }}</span> <span>{{ genreLabel(item.genre_ids) }}</span></p>
+                        </div>
+                    }
+                </div>
+            </section>
+        }
+    } @else if (error()) {
+        <div class="status">
+            <p>Could not load this movie. Check your connection and try again.</p>
+            <button class="btn btn--primary" (click)="backToMovieList()">Back to Movie List</button>
+        </div>
+    } @else {
+        <p class="loading">Loading movie…</p>
+    }
+
+    @if (trailerSrc(); as src) {
+        <div class="modal-backdrop" (click)="closeTrailer()">
+            <div class="modal" role="dialog" aria-modal="true" aria-label="Trailer" (click)="$event.stopPropagation()">
+                <button type="button" class="btn modal-close" (click)="closeTrailer()" aria-label="Close trailer">✕</button>
+                <iframe [src]="src" title="Trailer" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    }
+</div>
